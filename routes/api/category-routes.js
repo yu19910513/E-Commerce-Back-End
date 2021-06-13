@@ -3,19 +3,50 @@ const { Category, Product } = require('../../models');
 
 // The `/api/categories` endpoint
 
-router.get('/', (req, res) => {
-  // find all categories
-  // be sure to include its associated Products
+router.get('/', async (req, res) => {
+  try {
+    const result = await Category.findAll({
+    include: {
+      model: Product,
+      attributes: ['id', 'product_name', 'price', 'stock', 'category_id']
+    }
+    }); return res.status(200).json(result)}
+  catch(err) {
+    res.status(500).json(err)
+  }
 });
 
-router.get('/:id', (req, res) => {
-  // find one category by its `id` value
-  // be sure to include its associated Products
+
+
+router.get('/:id', async (req, res) => {
+  try {
+    const result = await Category.findOne(
+      {where:
+        {id: req.params.id}
+      },
+      {
+        include: {
+          model: Product,
+          attributes: ['id', 'product_name', 'price', 'stock', 'category_id']
+        }
+    });
+    return res.status(200).json(result)
+  }
+  catch(err) {
+    res.status(500).json(err)
+  }
 });
 
-router.post('/', (req, res) => {
-  // create a new category
+
+router.post('/', async (req, res) => {
+  try {
+    const addedItem = await Category.create({category_name: req.body.category_name});
+    return res.status(200).json(addedItem)
+  } catch (error) {
+    res.status(500).json(err)
+  }
 });
+
 
 router.put('/:id', (req, res) => {
   // update a category by its `id` value
